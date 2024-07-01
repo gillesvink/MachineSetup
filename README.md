@@ -4,6 +4,6 @@ Personal scripts to setup machines automated. Not meant for usage other than me.
 
 ## Alma 9 workstation
 ```bash
-sudo bash <(curl -s https://raw.githubusercontent.com/gillesvink/MachineSetup/main/alma_9.sh)
+bash <(curl -s https://raw.githubusercontent.com/gillesvink/MachineSetup/main/alma_9.sh)
 ```
 
