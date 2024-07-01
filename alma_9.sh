@@ -60,12 +60,10 @@ yum install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker
 
 read -p "Machine contains Nvidia GPU? (y/n): " answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
-    dnf config-manager --set-enabled crb
-    dnf makecache
     dnf config-manager --add-repo https://developer.download.nvidia.com/compute/cuda/repos/rhel9/x86_64/cuda-rhel9.repo
     dnf makecache
+    dnf install -y kernel-devel-$(uname -r) kernel-headers-$(uname -r) gcc make dkms acpid libglvnd-glx libglvnd-opengl libglvnd-devel pkgconfig freeglut-devel libX11-devel libXi-devel libXmu-devel make mesa-libGLU-devel freeimage-devel glfw-devel
     dnf module install nvidia-driver -y
-    dnf install freeglut-devel libX11-devel libXi-devel libXmu-devel make mesa-libGLU-devel freeimage-devel glfw-devel -y
 else
     echo "Skipping Nvidia driver install."
 fi
@@ -73,15 +71,17 @@ fi
 
 read -p "Install Nuke? (y/n): " answer
 if [ "$answer" != "${answer#[Yy]}" ] ;then
+    dnf install mesa-libGLU -y
     nuke_url="https://thefoundry.s3.amazonaws.com/products/nuke/releases/15.1v1/Nuke15.1v1-linux-x86_64.tgz"
     nuke_temp_files=/tmp/nuke_temp_files
     nuke_filename=$(basename "$nuke_url")
     mkdir ${nuke_temp_files}
     curl -o ${nuke_temp_files}/${nuke_filename} ${nuke_url}
     tar zxvf ${nuke_temp_files}/${nuke_filename} -C ${nuke_temp_files}
-    ${nuke_temp_files}/${nuke_filename%.*}.run --accept-foundry-eula --prefix=/usr/local/ --exclude-subdir
+    ${nuke_temp_files}/${nuke_filename%.*}.run --accept-foundry-eula --prefix=/usr/local 
     rm -rf ${nuke_temp_files}
-    echo "Continuing installation..."
+    echo "alias nuke='/usr/local/Nuke15.1v1/Nuke15.1'" >> ~/.bashrc
+
 else
     echo "Skipping Nuke install"
 fi
