@@ -86,7 +86,7 @@ else
     echo "Skipping Nuke install"
 fi
 
-dnf install gcc-toolset-12 -y
+dnf install gcc-toolset-12 cmake mesa-libGLU-devel -y
 echo "source /opt/rh/gcc-toolset-12/enable" >> ~/.bashrc
 
 
