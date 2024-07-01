@@ -20,9 +20,25 @@ dnf update
 flatpak remote-add --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
 dnf update
 
-rpm --import https://downloads.1password.com/linux/keys/1password.asc
-sh -c 'echo -e "[1password]\nname=1Password Stable Channel\nbaseurl=https://downloads.1password.com/linux/rpm/stable/\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=\"https://downloads.1password.com/linux/keys/1password.asc\"" > /etc/yum.repos.d/1password.repo'
-dnf install 1password -y
+
+read -p "Install personal apps? (y/n): " answer
+if [ "$answer" != "${answer#[Yy]}" ] ;then
+    flatpak install flathub com.spotify.Client
+    flatpak install flathub com.discordapp.Discord
+    dnf install gnome-tweak-tool -y
+
+    rpm --import https://downloads.1password.com/linux/keys/1password.asc
+    sh -c 'echo -e "[1password]\nname=1Password Stable Channel\nbaseurl=https://downloads.1password.com/linux/rpm/stable/\$basearch\nenabled=1\ngpgcheck=1\nrepo_gpgcheck=1\ngpgkey=\"https://downloads.1password.com/linux/keys/1password.asc\"" > /etc/yum.repos.d/1password.repo'
+    dnf install 1password -y
+
+    rpm --import https://packages.microsoft.com/keys/microsoft.asc
+    echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
+    dnf check-update
+    dnf install code -y
+else
+    echo "Skipping personal apps."
+fi
+
 
 mkdir -p ~/.ssh
 touch ~/.ssh/authorized_keys
@@ -73,10 +89,6 @@ fi
 dnf install gcc-toolset-12 -y
 echo "source /opt/rh/gcc-toolset-12/enable" >> ~/.bashrc
 
-rpm --import https://packages.microsoft.com/keys/microsoft.asc
-echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
-dnf check-update
-dnf install code -y
 
 mkdir ~/Code
 
